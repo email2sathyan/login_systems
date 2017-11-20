@@ -1,0 +1,569 @@
+<html>
+<head>
+<title>Advance Login System Documentation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body>
+<h1>Documentation</h1>
+<p><em>note: this file <strong>may</strong> contain data that is no longer applying 
+  in version 1.5. It will be updated ASAP</em></p>
+<h2>Intro</h2>
+<blockquote>
+  <p>This documentation is meant for people who would like to use A.L.S. on there 
+    site. In this documentation you will find how to customize the html page, 
+    settings and the script itself. In this documentation you will find the source 
+    of some pages of the script, but in this document, colors where added. These 
+    are to indicate special parts of the page. Why there special is explained 
+    below the code.</p>
+</blockquote>
+<h2>Customizing the html pages</h2>
+<blockquote> 
+  <h3 align="left"> Public pages</h3>
+  <blockquote> 
+    <p>It is important that your site has your design, therefore A.L.S. probably 
+      needs custom html pages for your site. To customize a page just create it 
+      in your favorite HTML-editor. then add the php code and place it in the 
+      correct directory. In most anonymous pages (like the login, signup, forgot 
+      pass and activate pages) there is a function called <strong>makeform($errormessage=&quot;&quot;)</strong> 
+      After this function you will find the following tag: <strong>?&gt;</strong> 
+      this indicates that the php codes ends here. And that's the exact location 
+      you can put your html-page. But you will notice that there is still non-html 
+      code after the <strong>?&gt;</strong>. This codes is (often) just to print 
+      an error message if needed. You can put the php-block (<strong>&lt;?PHP</strong> 
+      till <strong>?&gt;</strong>) on the place you would like your error message 
+      to show up. </p>
+    <p>For example the activate.php (an small exception on the above text):</p>
+    <blockquote> 
+      <table border="1" cellpadding="0" cellspacing="0" bgcolor="#FFFF99">
+        <tr> 
+          <td><p><em><font color="#006600"><code>&lt;?PHP<br>
+              //retrieve the username and the activation number from the url<br>
+              $username1 = @$HTTP_GET_VARS[&quot;username&quot;];<br>
+              $actnum1 = @$HTTP_GET_VARS[&quot;actnum&quot;];</code></font></em></p>
+            <p><code><font color="#006600"><em>//let the config.php page connected 
+              to the database<br>
+              include(&quot;config.php&quot;);<br>
+              //check it the combination of username/password is correct.<br>
+              $query = &quot;Select * from signup where username='$username1' 
+              And actnum='$actnum1'&quot;;<br>
+              $result = mysql_query($query); <br>
+              //if it is update the user's records. Set actnum to 0<br>
+              if ($row = mysql_fetch_array($result)){ <br>
+              $query = &quot;UPDATE signup Set actnum = '0' where username='$username1'&quot;; 
+              <br>
+              $result = mysql_query($query); <br>
+              // show the &quot;thank you for activating&quot; page.<br>
+              // for more info how to customize this page check login.php<br>
+              ?&gt;</em></font></code></p>
+            <p><code><font color="#FF0000"><em><strong>&lt;html&gt;<br>
+              &lt;head&gt;<br>
+              &lt;title&gt;Activate account&lt;/title&gt;<br>
+              &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; 
+              charset=iso-8859-1&quot;&gt;<br>
+              &lt;/head&gt;<br>
+              &lt;body&gt;<br>
+              &lt;h1&gt;Sign-Up Complete&lt;/h1&gt;<br>
+              &lt;p&gt;Thank you for activating your account. You may now &lt;a 
+              href=&quot;login.php&quot;&gt;login&lt;/a&gt; <br>
+              &lt;/p&gt;<br>
+              &lt;/body&gt;<br>
+              &lt;/html&gt;</strong></em></font></code></p>
+            <p><code><font color="#006600"><em>&lt;?PHP }<br>
+              //if the username/actnum combination doesn't match check why.<br>
+              else<br>
+              {<br>
+              //if the username is empty just show the form.<br>
+              if ($username1 == &quot;&quot;){makeform();}<br>
+              //but if the username isn't empty that means the user did submit 
+              the form.<br>
+              //therefore we print an error page and (again) the form.<br>
+              else<br>
+              { <br>
+              makeform(&quot;The username/activation-combination you entered is 
+              not correct. Please try again.&quot;);<br>
+              }<br>
+              }<br>
+              // the makeform function. prints the default form for activating.<br>
+              function makeform($errormessage=&quot;&quot;){<br>
+              // for more info how to customize this page check login.php<br>
+              ?&gt;<br>
+              <strong><font color="#0000FF">&lt;html&gt;<br>
+              &lt;head&gt;<br>
+              &lt;title&gt;Activate account&lt;/title&gt;<br>
+              &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; 
+              charset=iso-8859-1&quot;&gt;<br>
+              &lt;/head&gt;<br>
+              &lt;body&gt;<br>
+              &lt;h1&gt;Sign-Up Confirm Account&lt;/h1&gt;<br>
+              &lt;form name=&quot;form1&quot; method=&quot;get&quot; action=&quot;activate.php&quot;&gt;<br>
+              Thank you for signing up. An activationcode has been send to your 
+              e-mail adres.&lt;br&gt;<br>
+              <font color="#333333">&lt;?PHP <br>
+              // First we check if the errormessage variable is empty, if it is. 
+              we print the error message<br>
+              if ($errormessage != &quot;&quot;){echo &quot;&lt;br&gt;&lt;font 
+              color=\&quot;#FF0000\&quot;&gt;&lt;strong&gt;$errormessage&lt;/strong&gt;&lt;/font&gt;&lt;br&gt;&lt;br&gt;&quot;;} 
+              ?&gt;</font><br>
+              Username: <br>
+              &lt;input name=&quot;username&quot; type=&quot;text&quot; id=&quot;username&quot;&gt;<br>
+              &lt;br&gt;<br>
+              Activation code: <br>
+              &lt;input name=&quot;actnum&quot; type=&quot;text&quot; id=&quot;actnum&quot;&gt;<br>
+              &lt;br&gt;<br>
+              &lt;input type=&quot;submit&quot; value=&quot;Activate&quot;&gt;<br>
+              &lt;/form&gt;<br>
+              &lt;/body&gt;<br>
+              &lt;/html&gt;</font></strong><br>
+              &lt;?PHP } ?&gt;</em></font></code></p></td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+    </blockquote>
+    <p>In this page I you will notice 2 html-pages. The red marked page will be 
+      shown when the user activate his account. The page markt in blue, is the 
+      signup form. In that page you can find the gray area. That is the php-block 
+      which shows an error message if needed. You should put it on a clear spot 
+      if you create your page. The dark-green code is php code, and is not important 
+      to you if you only want to use A.L.S. as the engine for you website. Also 
+      if you like, you can change the color of the error message it self:</p>
+    <p><font color="#006600"><em><strong><font color="#0000FF"><font color="#006600">&lt;?PHP 
+      <br>
+      // First we check if the errormessage variable is empty, if it is. we print 
+      the error message<br>
+      if ($errormessage != &quot;&quot;){echo &quot;<font color="#0000FF">&lt;br&gt;&lt;font 
+      color=\&quot;#FF0000\&quot;&gt;&lt;strong&gt;<font color="#FF0000">$errormessage</font>&lt;/strong&gt;&lt;/font&gt;&lt;br&gt;&lt;br&gt;</font>&quot;;} 
+      ?&gt;</font></font></strong></em></font></p>
+    <p>The blue colored code is html code that you can change it you want. But 
+      you have to put a backslash( <font color="#0000FF">\</font> ) before every 
+      quote (<font color="#0000FF">&quot;</font>). The red part is the place where 
+      the actual error message will be visible. Make sure that you don't forget 
+      to put it in exactly as shown above. Customizing error messages is shown 
+      in &quot;<a href="documentation.html#settings">customizing settings</a>&quot;.</p>
+  </blockquote>
+  <h3>Member-Only Pages</h3>
+  <blockquote> 
+    <p>Your actual site which will be secured, has an other, and easier, syntax 
+      than the public pages. Again you just make page in your favorite HTML-editor, 
+      and after that you put the php code in, and put it in the correct directory. 
+      A good example off making a member only page is <em>secu1.php</em>.To make 
+      it easier the pages has been included below:</p>
+    <blockquote> 
+      <table border="1" cellpadding="0" cellspacing="0" bgcolor="#FFFF99">
+        <tr> 
+          <td><p align="left"><font color="#FF0000"><em><strong><code>&lt;?PHP<br>
+              // $reqlevel sets the accesslevel a user needs to have<br>
+              // use 0 (zero) if you want to make it an admin only page.<br>
+              // and 1 (one) is default for an new user. <br>
+              $reqlevel = <font color="#000000">1</font>;<br>
+              // this makes the page an member only page.<br>
+              include(&quot;membersonly.inc.php&quot;);<br>
+              //after this we use ? &gt; to end the php part and we put the page.<br>
+              ?&gt;</code></strong></em></font><code><font color="#006600"><em><br>
+              &lt;html&gt;<br>
+              &lt;head&gt;<br>
+              &lt;title&gt;secu 1&lt;/title&gt;<br>
+              &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; 
+              charset=iso-8859-1&quot;&gt;<br>
+              &lt;/head&gt;</em></font></code></p>
+            <p align="left"><code><font color="#006600"><em>&lt;body&gt;<br>
+              security page 1&lt;br&gt;<br>
+              welcome <font color="#0000FF"><strong>&lt;?PHP <br>
+              // with this script you can include the username of the user that 
+              is currently loged in.<br>
+              echo ($user_currently_loged); ?&gt;</strong></font><br>
+              &lt;/body&gt;<br>
+              &lt;/html&gt;</em></font></code></p></td>
+        </tr>
+      </table>
+      <p align="left"><em><font color="#006600"></font></em></p>
+    </blockquote>
+    <p align="left">This is a simple html page which shows you how to secure a 
+      page. The red part is the part which checks if the user is allowed to check 
+      the page. As you may notice the block is longer than in other pages. This 
+      is because there are more comments in this one. In this block you are allowed 
+      to set the minimal accesslevel a user should have. You can fill it in at 
+      the black one (in the red part of the code). A shorter version of the phpcode 
+      is also possible:</p>
+    <blockquote> 
+      <p align="left"><font color="#FF0000"><em><strong><font color="#006600">&lt;?PHP 
+        $reqlevel = 1; include(&quot;membersonly.inc.php&quot;); ?&gt;</font></strong></em></font></p>
+    </blockquote>
+    <p align="left">This one lined code does the same as the above code.<br>
+      To get back to the secu1.php pages, I'll explain the blue part of the code:</p>
+    <blockquote> 
+      <p align="left"> <font color="#006600"><em><strong>&lt;?PHP <br>
+        // with this script you can include the username of the user that is currently 
+        loged in.<br>
+        echo (<font color="#FF0000">$user_currently_loged</font>); ?&gt;</strong></em></font> 
+      </p>
+    </blockquote>
+    <p align="left">This code is optional and will put the nickname of the currently 
+      loged in user. So if user &quot;admin&quot; would be logged in the page 
+      would say:<br>
+      <em>welcome admin</em>, in which admin is written by the phpscript. As you 
+      noticed I colored<font color="#006600"><em><strong><font color="#FF0000">$user_currently_loged</font></strong></em></font> 
+      in red, this is because there are another codes like this one. But that 
+      code will not show the name of the users logged in, but his accesslevel. 
+      to use this replace the red colored word with the following word: <strong><font color="#FF0000">$user_current_Rank</font></strong> 
+      . This would make (short notation):<br>
+    </p>
+    <table width="51%" border="0" cellspacing="0" cellpadding="0">
+      <tr bgcolor="#000000"> 
+        <th width="24%" nowrap><div align="center"><font color="#FFFFFF">Returns</font></div></th>
+        <th width="18%" nowrap><div align="center"><font color="#FFFFFF">Syntax</font></div></th>
+        <th width="58%" nowrap><div align="center"><font color="#FFFFFF">Example 
+            Of Outcome</font></div></th>
+      </tr>
+      <tr> 
+        <td nowrap>Name of currently logged in user</td>
+        <td nowrap><div align="center"><font color="#0000FF"><em><strong>&lt;?PHP 
+            echo ($user_currently_loged); ?&gt;</strong></em></font></div></td>
+        <td nowrap><div align="center">ADMIN</div></td>
+      </tr>
+      <tr bgcolor="#CCCCCC"> 
+        <td nowrap>The rank of the currently logged in user</td>
+        <td nowrap><div align="center"><font color="#0000FF"><em><strong>&lt;?PHP 
+            echo ($user_current_Rank); ?&gt;</strong></em></font></div></td>
+        <td nowrap><div align="center">newbie</div></td>
+      </tr>
+      <tr> 
+        <td nowrap>The accesslevel of the current user</td>
+        <td nowrap><div align="center"><font color="#0000FF"><em><strong>&lt;?PHP 
+            echo ($user_current_level); ?&gt;</strong></em></font></div></td>
+        <td nowrap><div align="center">7</div></td>
+      </tr>
+      <tr bgcolor="#CCCCCC">
+        <td nowrap>The number of new PM's</td>
+        <td nowrap><font color="#0000FF"><em><strong>&lt;?PHP echo (</strong></em><strong><em>$user_current_ammount_new); 
+          ?&gt;</em></strong></font></td>
+        <td nowrap><div align="center">8</div></td>
+      </tr>
+    </table>
+    <p align="left"> The dark green code is plain html code.</p>
+    <p>Another thing is the navigation page, this should be the hart of your site. 
+      The navigation page included with the example shows a lot of features. </p>
+  </blockquote>
+  <ul>
+    <li>It will only show the link to the admin page if the user is an admin</li>
+    <li>It shows the currently logged in users name</li>
+    <li>It shows the currently logged in users rank in words</li>
+    <li>It shows the number of new PM (at the moment the navigation page is (re)loaded)</li>
+    <li>It is only available to members.</li>
+  </ul>
+  <blockquote> 
+    <p>And these are al features that are easy to implant in your very own navigation 
+      menu. To explain how I added the source of <strong> nav.php</strong> below:</p>
+    <blockquote> 
+      <table border="1" cellpadding="0" cellspacing="0" bgcolor="#FFFF99">
+        <tr> 
+          <td bgcolor="#FFFF99"><p><font color="#006600"><em><font color="#FF0000"><strong><code>&lt;?PHP 
+              $reqlevel = 1; include(&quot;membersonly.inc.php&quot;);?&gt;</code></strong></font><code><br>
+              &lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot;&gt;<br>
+              &lt;html&gt;<br>
+              &lt;head&gt;<br>
+              &lt;title&gt;Navigationpage&lt;/title&gt;<br>
+              &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; 
+              charset=iso-8859-1&quot;&gt;<br>
+              &lt;/head&gt;</code></em></font></p>
+            <p><code><font color="#006600"><em>&lt;body&gt;<br>
+              welcome <font color="#CC0000"><strong>&lt;?PHP<br>
+              echo ($user_currently_loged); <br>
+              echo ($user_current_Rank);<br>
+              ?&gt;</strong></font>&lt;br&gt;<br>
+              &lt;a href=&quot;secu1.php&quot; target=&quot;mainFrame&quot;&gt;secured 
+              page 1&lt;/a&gt;&lt;br&gt;<br>
+              &lt;a href=&quot;secu2.php&quot; target=&quot;mainFrame&quot;&gt;secured 
+              page 2&lt;/a&gt;&lt;br&gt;<br>
+              <font color="#0000FF"><strong>&lt;?PHP<br>
+              // check if the logged in user is an admin by checking his accesslevel.<br>
+              // if he is, show the link, if he isn't just show the word admin.<br>
+              if ($user_current_level &lt; 0){<br>
+              // this actions happen if the user is an admin<br>
+              echo &quot;&lt;a href=\&quot;admin.php\&quot; target=\&quot;mainFrame\&quot;&gt;admin&lt;/a&gt;&lt;br&gt;&quot;;<br>
+              }<br>
+              else{<br>
+              // this actions happens if the user is not an admin<br>
+              echo &quot;&quot;;<br>
+              }<br>
+              ?&gt;</strong></font><br>
+              &lt;a href=&quot;changepass.php&quot; target=&quot;mainFrame&quot;&gt;change 
+              password&lt;/a&gt; &lt;br&gt;<br>
+              &lt;a href=&quot;deleteaccount.php&quot; target=&quot;mainFrame&quot;&gt;delete 
+              account&lt;/a&gt;&lt;BR&gt;<br>
+              <font color="#333333"><strong>&lt;a href=&quot;logoff.php&quot; 
+              target=&quot;_top&quot;&gt;logoff&lt;/a&gt; </strong></font><br>
+              &lt;/body&gt;<br>
+              &lt;/html&gt;</em></font></code></p></td>
+        </tr>
+      </table>
+    </blockquote>
+    <p>On top (in red) we see the security header, but I will not explain this 
+      again. Further down you will find (in dark red) an php block which echo's 
+      the username, and his rank. Then we come to an interesting peace of php 
+      (in blue). This codes will allow you to make some links, visible to some 
+      users only. The most common way to hide a link is to look at the accesslevel 
+      of an user. In this case only users with an accesslevel below zero (those 
+      are al admin's) can see the link. The default syntax for this is:</p>
+    <blockquote> 
+      <p><strong><font color="#006600"><em>&lt;?PHP <br>
+        If (<font color="#0000FF"><strong>$user_current_level</strong></font> 
+        <font color="#FF0000">==</font> <font color="#333333">0</font>){<br>
+        </em>actions if true<em><br>
+        }else{<br>
+        </em>actions if not true<em><br>
+        </em></font></strong><em><strong><font color="#006600">} <br>
+        ?&gt; </font></strong></em></p>
+    </blockquote>
+    <p>The blue part in this code is what your talking about. <strong><font color="#006600"><em><font color="#0000FF"><strong>$user_current_level</strong></font></em></font></strong> 
+      is<em> </em>mostly used, so you don't have to change that. After this you 
+      will find the red code. This is your operator. This will tell what is ok 
+      and what not. Below you will find a couple operators and there meaning: 
+      The # in this codes indicates the black number in the code. You can replace 
+      it with any number you like.</p>
+    <table width="75%" border="0" cellspacing="0" cellpadding="0">
+      <tr bgcolor="#000000"> 
+        <th width="9%" nowrap><div align="center"><strong><font color="#FFFFFF">Operator&nbsp;&nbsp; 
+            </font></strong></div></th>
+        <th width="26%" nowrap><div align="center"><strong><font color="#FFFFFF">&nbsp;&nbsp;Function 
+            (the level of the current user is:)&nbsp;&nbsp;</font></strong></div></th>
+        <th width="65%" nowrap><div align="center"><strong><font color="#FFFFFF">&nbsp;&nbsp;Example 
+            of use&nbsp;&nbsp;</font></strong></div></th>
+      </tr>
+      <tr> 
+        <td nowrap><div align="center"><font color="#FF0000"><strong>==</strong></font></div></td>
+        <td nowrap> <div align="center">Equal to #</div></td>
+        <td nowrap>If you want a page to be visible to level 10 members only</td>
+      </tr>
+      <tr bgcolor="#CCCCCC"> 
+        <td nowrap><div align="center"><font color="#FF0000"><strong>&lt;</strong></font></div></td>
+        <td nowrap><div align="center">Smaller then #</div></td>
+        <td nowrap>If you want to make a page visible to users below level 10 
+          (9 and less).</td>
+      </tr>
+      <tr> 
+        <td nowrap><div align="center"><font color="#FF0000"><strong>&gt;</strong></font></div></td>
+        <td nowrap><div align="center">Greater then #</div></td>
+        <td nowrap>If you want to make a page visible to users above level 10 
+          (11 and higher).</td>
+      </tr>
+      <tr bgcolor="#CCCCCC"> 
+        <td nowrap><div align="center"><font color="#FF0000"><strong>!=</strong></font></div></td>
+        <td nowrap><div align="center">Not #</div></td>
+        <td nowrap>If you want to make a page that is not visible to one userlevel.</td>
+      </tr>
+    </table>
+    <p>And finally the last line (<font color="#006600"><em><font color="#333333"><strong>&lt;a 
+      href=&quot;logoff.php&quot; target=&quot;_top&quot;&gt;logoff&lt;/a&gt;</strong></font></em></font>). 
+      Actually this is not a real special line but just to remember you that the 
+      log-out page should be loaded in the top frame. This because it redirects 
+      to login page after the logoff. If you would load it in one frame you would 
+      only see the page in that frame.</p>
+  </blockquote>
+</blockquote>
+<h2><a name="settings">Customizing the settings</a></h2>
+<blockquote> 
+  <p>Al the settings from A.L.S. are stored in one file. Config.php .</p>
+  <table border="1" cellpadding="0" cellspacing="0" bgcolor="#FFFF99">
+    <tr> 
+      <td><p><em><font color="#006600"><code>&lt;?PHP<br>
+          // These variables are needed to connect to the database, if your not 
+          sure about these data contact your hosting company. <br>
+          // since this is VERY important to the log-in system<br>
+          // if you are using a local system to to test, the server is (almost) 
+          always localhost.<br>
+          // for tripod users: don't fill in a username / password. Only your 
+          databasename <br>
+          // for tripod users: username_country_db so that would be (example) 
+          utimer_nl_db<br>
+          // for tripod users: if you are unsure check in the FAQ of tripod</code></font></em></p>
+        <p><code><font color="#FF0000"><em> <strong>$server = &quot;localhost&quot;; 
+          // often localhost<br>
+          $username = &quot;&quot;; // Your MySQL server username<br>
+          $password = &quot;&quot;; // Your MySQL server password<br>
+          $database = &quot;&quot;; // If you fill in nothing database 'members' 
+          will be used. If 'members' doesn't exist it will be created.<br>
+          $DBprefix = &quot;ALS&quot;; // the prefix for the tables in the database 
+          (can be left blank)</strong></em></font></code></p>
+        <p><code><font color="#006600"><em>// The ranks for the members. The first 
+          in the list is userlevel is 1, every item after (seperate with comma's) 
+          increases with one.<br>
+          // so the example below is: 1 = newbie, 2=new member, 3=member, 4=high 
+          member, 5=very high member, ect<br>
+          <font color="#0000FF"><strong>$ranks = array(<br>
+          1=&gt;&quot;newbie&quot;,<br>
+          2=&gt;&quot;new member&quot;,<br>
+          3=&gt;&quot;member&quot;,<br>
+          4=&gt;&quot;high member&quot;,<br>
+          5=&gt;&quot;very high member&quot;,<br>
+          6=&gt;&quot;supreme member&quot;,<br>
+          7=&gt;&quot;ultra member&quot;,<br>
+          8=&gt;&quot;godlike member&quot;,<br>
+          9=&gt;&quot;god member&quot;,<br>
+          10=&gt;&quot;low god&quot;,<br>
+          11=&gt;&quot;medium god&quot;,<br>
+          12=&gt;&quot;high god&quot;,<br>
+          13=&gt;&quot;very high god&quot;,<br>
+          14=&gt;&quot;supreme god&quot;,<br>
+          15=&gt;&quot;ultra god&quot;,<br>
+          16=&gt;&quot;perfect&quot;<br>
+          );</strong></font><br>
+          <br>
+          // script options:<br>
+          <strong><font color="#666666">$usernameLengthMIN = 1; // Sets the minium 
+          nubmer of characters in the username <br>
+          $usernameLengthMAX = 20; // Sets the maxium number of characters in 
+          the username (max 20 chars!)<br>
+          $passwordLengthMIN = 3; // Sets the minium nubmer of characters in the 
+          password <br>
+          $passwordLengthMAX = 8; // Sets the maxium number of characters in the 
+          password (max 20 chars!)<br>
+          $UseMailConfirm = true; // Only set this to false if your host does 
+          not support mail()<br>
+          $AllowForgotPassword = true; // Only set this to false if your host 
+          does not support mail()<br>
+          $UsernameValCharOnly = true; // If set on true the user can only use 
+          usernames with A to Z, a to z, 0 to 9<br>
+          $passwordValCharOnly = true; // If set on true the user can only use 
+          passwords with A to Z, a to z, 0 to 9<br>
+          $allowChangePassword = true; // If set on false the user cant change 
+          passwords<br>
+          $makeAdminOnlyActivate = false; // Set this to true if you want to activate 
+          al accounts by hand throught the admin screen<br>
+          $allowResend = true; // Set this to false if you don't want the users 
+          to be able to have the activation code resend<br>
+          // Note that the form will be visible anyway and that if $UseMailConfirm 
+          = false if wont be send either<br>
+          $TripodSupport = false; // Only set this to true if you are hosted on 
+          tripod.</font></strong></em></font></code></p>
+        <p><code><font color="#006600"><em>// ErrorStrings:<br>
+          <font color="#CC6600"><strong>$couldNotConnectMysql = &quot;Could not 
+          connect MySQL&lt;BR&gt;\n please check your settings in config.php&quot;;<br>
+          $couldNotOpenDatabase = &quot;Could not open database&lt;BR&gt;\n please 
+          check your settings in config.php&quot;;<br>
+          $disabledFeatures = &quot;The adminstrator of this site has disabled 
+          this feature&quot;;<br>
+          $incorrectLogin = &quot;Incorrect login&quot;;<br>
+          $underAttackReLogin = &quot;This account was under attack. Therefore 
+          it was locked. To terminate the lock log-in with you correct loginname 
+          and password. After this log-in the lock will be terminated and you 
+          can you use our account as normal&lt;BR&gt; NOTE: make sure you do not 
+          make any type errors. This would activate the lock again.&quot;;<br>
+          $underAttackPleaseWait = &quot;This account is under attack. Please 
+          wait an until the account is released again.&quot;; <br>
+          $accountNotActivated = &quot;This account has not been activated yet.&quot;;<br>
+          $incorrectUserMailaders = &quot;The username / e-mail-combination you 
+          entered is incorrect.&quot;;<br>
+          $activationCodeHasBeenResend = &quot;Your activationcode has been resend 
+          to your mailadres.&quot;;<br>
+          $incorrectUserActcode =&quot;The username/activation-combination you 
+          entered is not correct. Please try again.&quot;;</strong></font></em></font></code></p>
+        <p><code><font color="#006600"><em><br>
+          // The content of the activation email<br>
+          // also possible is to put a link in that message like :<br>
+          // http:// your url /activate.php?username=$username1&amp;actnum=$actnum<br>
+          // this would allow the user to direcly submit there activation without 
+          having to enter<br>
+          // al the data again in the activation form.<br>
+          // use %p to print the activation number, use %a if you want the use 
+          the % sign<br>
+          <strong><font color="#FF00FF">$email_message_content = &quot;Your activation 
+          number: %p&quot;;</font></strong><br>
+          // also set the title of the message<br>
+          <font color="#FF00FF"><strong>$email_message_title = &quot;Login sytem&quot;;</strong></font><br>
+          // and we put the sender in this mail. <br>
+          // syntax: &quot;From: YOUR SENDER&quot;<br>
+          // note this will also be used for the forgot password mail.<br>
+          <strong><font color="#FF00FF">$email_message_header = &quot;From: Sign-up 
+          script&quot;;</font></strong><br>
+          // the content of the forgot password mail:<br>
+          // use %p to print the password, use %a if you want to use the % sign<br>
+          <font color="#FF00FF"><strong>$message_forgot_password = &quot;Your 
+          password:\n %p&quot;;</strong></font><br>
+          // and here you can give a title (subject) for the forgot password mail.<br>
+          <strong><font color="#FF00FF">$title_forgot_password = &quot;Password 
+          request&quot;;</font></strong></em></font></code></p>
+        <p><code><font color="#006600"><em><br>
+          // +---------------------------------------------------------------------------------------------------------+ 
+          //<br>
+          // +--------------------------- Below this line you do not need to edit 
+          the code! ---------------------------+ //<br>
+          // +---------------------------------------------------------------------------------------------------------+ 
+          //</em></font></code></p>
+        <p><code><font color="#006600"><em>// if the prefix is not empty add an 
+          _ (underscore)<br>
+          if ($DBprefix != &quot;&quot;){$DBprefix = $DBprefix . &quot;_&quot;;}</em></font></code></p>
+        <p><code><font color="#006600"><em>// Code to make sure that the $database 
+          field was filled and code to connect to the database<br>
+          if ($database == &quot;&quot;){<br>
+          // Check it the database exist<br>
+          $query = &quot;use members&quot;;<br>
+          // If this query is succesfull, and returns a 1. this means that the 
+          database members can be used.<br>
+          // If it returns 'null' then it doesn't exist.<br>
+          if (mysql_query($query) == null){<br>
+          //if it doesn't exist we create it and connect to it.<br>
+          $query = &quot;CREATE DATABASE members&quot;;<br>
+          $result = mysql_query($query);<br>
+          if ($result == 1){<br>
+          $conn = mysql_connect($server,$username,$password) or die ($couldNotConnectMysql); 
+          <br>
+          mysql_select_db($database,$conn) or die ($couldNotOpenDatabase);<br>
+          }else{echo &quot;Error while creating database (Errornumber &quot;. 
+          mysql_errno() .&quot;: \&quot;&quot;. mysql_error() .&quot;\&quot;)&lt;br&gt;&quot;;}<br>
+          }<br>
+          else{<br>
+          // It already exist so we will connect to it.<br>
+          $database= &quot;members&quot;;<br>
+          $conn = mysql_connect($server,$username,$password) or die ($couldNotConnectMysql); 
+          <br>
+          mysql_select_db($database,$conn) or die ($couldNotOpenDatabase); <br>
+          } <br>
+          }<br>
+          else{<br>
+          // connect or show an error.<br>
+          $conn = mysql_connect($server,$username,$password) or die ($couldNotConnectMysql); 
+          <br>
+          mysql_select_db($database,$conn) or die ($couldNotOpenDatabase);<br>
+          }<br>
+          ?&gt;</em></font></code></p></td>
+    </tr>
+  </table>
+  <p>In the red lines you can put your database information. You can obtain this 
+    information from your host. If you fill in another database, you will have 
+    to run install.php again. The blue lines indicate an optional feature in A.L.S. 
+    It allows you to use ranks. For example: in this config.php file it is set 
+    that a level 1 users is called a <em><strong>Newbie</strong></em>.<em><strong> 
+    </strong></em>To customize this just replace the text within the quotes with 
+    the level you want. Example:</p>
+  <blockquote> 
+    <p><font color="#006600"><em>$ranks = array(<br>
+      1=&gt;&quot;<font color="#FF0000"><strong>newbie</strong></font>&quot;<font color="#FF00FF">,</font><br>
+      <font color="#0000FF"><strong>2</strong></font>=&gt;&quot;new member&quot;<br>
+      );</em></font></p>
+  </blockquote>
+  <p>In this example the accesslevel 1 and 2 got a name. If you want to change 
+    the name of a level you just replace the red part in this code. If you want 
+    to add a level just add a line, like the second line. You change the blue 
+    2 (two) into the number you want to set, and you replace the qouted text just 
+    like in the first row. Note that al lines end with an , (comma) except for 
+    the last line. <br>
+    For the purple lines; you just have to fill in the correct settings like you 
+    did in the first lines (the red lines.)</p>
+</blockquote>
+<h2>Customize the script itself</h2>
+<blockquote>
+  <p>The only way to customize the script further is to add php code to the pages. 
+    You can read the comments in the script to get more information about what 
+    that pages does. A comment starts with // (slash slash). Because this request 
+    the user to know php and because the variety off possibilities is to large 
+    to explain you will just have to try to modify. If you make a mistake php 
+    will tell you with an error message. You don't have to be afraid to damage 
+    the data on your hard disk. Most often php doesn't have access to that data. 
+    So be free to experiment with the script. If you got an problem you can not 
+    solve you can always ask me. You can mail your question to me at <a href="mailto:utimer@lycos.nl">utimer@lycos.nl</a>. 
+    As subject take &quot;<strong>A.L.S.1,5 Customize problem </strong>&quot; 
+    (without the quotes).</p>
+</blockquote>
+</body>
+</html>
